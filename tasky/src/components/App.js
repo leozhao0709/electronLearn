@@ -1,5 +1,13 @@
-import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import React, {
+  Component
+} from "react";
+import {
+  Route,
+  Switch
+} from "react-router-dom";
+import {
+  ipcRenderer
+} from 'electron';
 
 import Header from "./Header";
 import TasksIndex from "./TasksIndex";
@@ -10,12 +18,31 @@ import Settings from "./Settings";
 const APP_DATA = JSON.parse(localStorage.getItem("__INITIAL_STATE__"));
 
 const INITIAL_STATE = {
-  tasks: [
-    { id: 1, task: "Build App1", totalTime: 10 },
-    { id: 2, task: "Build App2", totalTime: 60 },
-    { id: 3, task: "Build App3", totalTime: 1000 },
-    { id: 4, task: "Build App4", totalTime: 10000 },
-    { id: 5, task: "Build App5", totalTime: 100000 }
+  tasks: [{
+      id: 1,
+      task: "Build App1",
+      totalTime: 10
+    },
+    {
+      id: 2,
+      task: "Build App2",
+      totalTime: 60
+    },
+    {
+      id: 3,
+      task: "Build App3",
+      totalTime: 1000
+    },
+    {
+      id: 4,
+      task: "Build App4",
+      totalTime: 10000
+    },
+    {
+      id: 5,
+      task: "Build App5",
+      totalTime: 100000
+    }
   ],
   activeTask: null,
   timer: {
@@ -48,11 +75,11 @@ class App extends Component {
   };
 
   updateTrayText = title => {
-
+    ipcRenderer.send('update-timer', title);
   };
 
   timerHasExpired = () => {
-
+    ipcRenderer.send('update-timer', '');
   };
 
   // -------- end of electron event handerls ----------
@@ -66,7 +93,10 @@ class App extends Component {
   }
 
   initializeTimer(timerSettings = {}) {
-    const { time, unit } = timerSettings;
+    const {
+      time,
+      unit
+    } = timerSettings;
     const timerConfig = {
       duration: time || this.state.timer.time,
       unit: unit || this.state.timer.unit,
@@ -78,17 +108,23 @@ class App extends Component {
 
   handleTimerUpdate = (newDisplay, reset) => {
     this.setState(prevState => {
-      const { timer, activeTask } = prevState;
-      const { active } = timer;
+      const {
+        timer,
+        activeTask
+      } = prevState;
+      const {
+        active
+      } = timer;
       const updateTaskTime = active && !reset.reset;
       return {
-        timer: { ...timer, display: newDisplay },
+        timer: { ...timer,
+          display: newDisplay
+        },
 
         activeTask: {
           ...activeTask,
-          totalTime: updateTaskTime
-            ? activeTask.totalTime + 1
-            : activeTask.totalTime
+          totalTime: updateTaskTime ?
+            activeTask.totalTime + 1 : activeTask.totalTime
         }
       };
     });
@@ -99,7 +135,9 @@ class App extends Component {
 
   handleTimerExpiration = () => {
     this.setState({
-      timer: { ...this.state.timer, active: false }
+      timer: { ...this.state.timer,
+        active: false
+      }
     });
     this.timerHasExpired(); // handler for electron Notifications
   };
@@ -128,7 +166,8 @@ class App extends Component {
   };
 
   handleDataReset = () => {
-    this.setState({ ...INITIAL_STATE });
+    this.setState({ ...INITIAL_STATE
+    });
   };
 
   handleActivation = task => {
@@ -154,7 +193,9 @@ class App extends Component {
     this.timer.start(() => {
       // sending a callback so there is no delay in rendering start/stop buttons
       this.setState({
-        timer: { ...this.state.timer, active: true }
+        timer: { ...this.state.timer,
+          active: true
+        }
       });
     });
   };
@@ -162,56 +203,94 @@ class App extends Component {
   handleTimerStop = () => {
     this.timer.stop(() => {
       this.setState({
-        timer: { ...this.state.timer, active: false }
+        timer: { ...this.state.timer,
+          active: false
+        }
       });
     });
   };
 
   render() {
-    const { tasks, activeTask, timer } = this.state;
-    return (
-      <div>
-        <Header />
-        <div className="container" style={styles.container}>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => (
-                <TasksIndex
-                  activeTask={activeTask}
-                  onTaskDeactivate={this.handleDeactivation}
-                  onTimerStart={this.handleTimerStart}
-                  onTimerStop={this.handleTimerStop}
-                  timer={timer}
-                />
-              )}
-            />
-            <Route
-              path="/tasks"
-              render={() => (
-                <TasksShow
-                  tasks={tasks}
-                  activeTask={activeTask}
-                  createTask={this.createTask}
-                  deleteTask={this.deleteTask}
-                  onTaskActivate={this.handleActivation}
-                />
-              )}
-            />
-            <Route
-              path="/settings"
-              render={() => (
-                <Settings
-                  timer={timer}
-                  handleSubmit={this.handleSettingsUpdate}
-                  handleDataReset={this.handleDataReset}
-                />
-              )}
-            />
-          </Switch>
-        </div>
-      </div>
+    const {
+      tasks,
+      activeTask,
+      timer
+    } = this.state;
+    return ( <
+      div >
+      <
+      Header / >
+      <
+      div className = "container"
+      style = {
+        styles.container
+      } >
+      <
+      Switch >
+      <
+      Route exact path = "/"
+      render = {
+        () => ( <
+          TasksIndex activeTask = {
+            activeTask
+          }
+          onTaskDeactivate = {
+            this.handleDeactivation
+          }
+          onTimerStart = {
+            this.handleTimerStart
+          }
+          onTimerStop = {
+            this.handleTimerStop
+          }
+          timer = {
+            timer
+          }
+          />
+        )
+      }
+      /> <
+      Route path = "/tasks"
+      render = {
+        () => ( <
+          TasksShow tasks = {
+            tasks
+          }
+          activeTask = {
+            activeTask
+          }
+          createTask = {
+            this.createTask
+          }
+          deleteTask = {
+            this.deleteTask
+          }
+          onTaskActivate = {
+            this.handleActivation
+          }
+          />
+        )
+      }
+      /> <
+      Route path = "/settings"
+      render = {
+        () => ( <
+          Settings timer = {
+            timer
+          }
+          handleSubmit = {
+            this.handleSettingsUpdate
+          }
+          handleDataReset = {
+            this.handleDataReset
+          }
+          />
+        )
+      }
+      /> < /
+      Switch > <
+      /div> < /
+      div >
     );
   }
 }
