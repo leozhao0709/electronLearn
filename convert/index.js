@@ -21,6 +21,10 @@ app.on('ready', () => {
     }
   });
   mainWindow.loadURL(`file://${__dirname}/src/index.html`);
+
+  mainWindow.on('closed', () => {
+    app.quit();
+  })
 });
 
 ipcMain.on('videos:added', (event, videos) => {

@@ -2,18 +2,24 @@
   "name": "timer",
   "version": "1.0.0",
   "description": "Electron timer app",
-  "main": "index.js",
+  "main": "./index.js",
+  "build": {
+    "appId": "your.id",
+    "mac": {
+      "category": "your.app.category.type"
+    },
+    "win": {}
+  },
   "scripts": {
     "start": "webpack-dev-server",
     "electron": "electron .",
-    "package": "electron-packager ./ convert --platform=darwin --arch=x64 --out ./package/ --version 0.30.2  --ignore=README.md --ignore=.gitignore"
+    "pack": "build --dir",
+    "dist": "build"
   },
   "author": "Rallycoding",
   "devDependencies": {
-    "asar": "^0.13.0",
-    "electron": "~1.6.2",
-    "electron-builder": "^18.3.5",
-    "electron-packager": "^8.7.0"
+    "electron": "^1.6.10",
+    "electron-builder": "^18.3.5"
   },
   "dependencies": {
     "babel-core": "^6.24.0",
